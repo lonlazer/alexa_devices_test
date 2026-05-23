@@ -17,7 +17,6 @@ from homeassistant.helpers.entity import EntityDescription
 from .const import DOMAIN
 from .coordinator import AmazonConfigEntry, AmazonDevicesCoordinator
 from .entity import AmazonServiceEntity
-from .utils import alexa_api_call
 
 if TYPE_CHECKING:
     from aioamazondevices.structures import ListInfo, ListItem
@@ -110,7 +109,6 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
             for item in todo_items
         ]
 
-    @alexa_api_call
     async def async_create_todo_item(self, item: TodoItem) -> None:
         """Add an item to the To-do list.
 
@@ -139,7 +137,6 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
             self._list.name,
         )
 
-    @alexa_api_call
     async def async_delete_todo_items(self, uids: list[str]) -> None:
         """Delete items from the to-do list.
 
@@ -186,7 +183,6 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
                 existing_item.version,
             )
 
-    #@alexa_api_call
     async def async_update_todo_item(self, item: TodoItem) -> None:
         """Update an item in the To-do list.
 
@@ -223,9 +219,11 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
                     "list_name": self._list.name,
                 },
             )
-        
+
         # Check what has changed
-        has_completed_changed = is_item_complete(existing_item) != (item.status == TodoItemStatus.COMPLETED)
+        has_completed_changed = is_item_complete(existing_item) != (
+            item.status == TodoItemStatus.COMPLETED
+        )
         has_summary_changed = existing_item.name != item.summary
 
         if has_completed_changed:
