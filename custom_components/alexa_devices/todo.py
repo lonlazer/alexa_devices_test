@@ -13,14 +13,13 @@ from homeassistant.components.todo import (
 )
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity import EntityDescription
-from regex import D, E, P
 
 from .const import DOMAIN
 from .coordinator import AmazonConfigEntry, AmazonDevicesCoordinator
 from .entity import AmazonServiceEntity
 
 if TYPE_CHECKING:
-    from aioamazondevices.structures import ListInfo, ListItem
+    from aioamazondevices.structures import ListInfo
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
@@ -74,23 +73,25 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
         self._coordinator: AmazonDevicesCoordinator = coordinator
         self._list: ListInfo = alexa_list
 
-
         if alexa_list.list_type == ListType.SHOP:
-            entity_description = EntityDescription(key=alexa_list.id,
-                                                   translation_key="shop")
+            entity_description = EntityDescription(
+                key=alexa_list.id, translation_key="shop"
+            )
 
         elif alexa_list.list_type == ListType.TODO:
-            entity_description = EntityDescription(key=alexa_list.id,
-                                                   translation_key="todo")
+            entity_description = EntityDescription(
+                key=alexa_list.id, translation_key="todo"
+            )
         else:
             # Custom list -> Use actual name
-            entity_description = EntityDescription(key=alexa_list.id,
-                                                   name=alexa_list.name)
+            entity_description = EntityDescription(
+                key=alexa_list.id, name=alexa_list.name
+            )
 
         self._attr_unique_id = alexa_list.id
 
         super().__init__(
-        coordinator,
+            coordinator,
             entity_description,
         )
 
@@ -106,7 +107,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
             List of TodoItems in the list.
         """
 
-        todo_items: list[ListItem] = self._coordinator.todo_items.get(self._list.id, [])
+        todo_items = self._coordinator.todo_items_lookup.get(self._list.id, {}).values()
 
         return [
             TodoItem(
