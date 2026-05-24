@@ -84,6 +84,14 @@
             "do_not_disturb": {
                 "name": "Do not disturb"
             }
+        },
+        "todo": {
+            "shop": {
+                "name": "Shopping List"
+            },
+            "todo": {
+                "name": "To-do List"
+            }
         }
     },
     "exceptions": {

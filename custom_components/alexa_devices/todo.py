@@ -13,6 +13,7 @@ from homeassistant.components.todo import (
 )
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity import EntityDescription
+from regex import D, E, P
 
 from .const import DOMAIN
 from .coordinator import AmazonConfigEntry, AmazonDevicesCoordinator
@@ -73,16 +74,24 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
         self._coordinator: AmazonDevicesCoordinator = coordinator
         self._list: ListInfo = alexa_list
 
-        self._attr_unique_id = alexa_list.id
-        self._attr_name = alexa_list.name
 
-        self._attr_translation_key = (
-            "shop" if alexa_list.list_type == ListType.SHOP else "todo"
-        )
+        if alexa_list.list_type == ListType.SHOP:
+            entity_description = EntityDescription(key=alexa_list.id,
+                                                   translation_key="shop")
+
+        elif alexa_list.list_type == ListType.TODO:
+            entity_description = EntityDescription(key=alexa_list.id,
+                                                   translation_key="todo")
+        else:
+            # Custom list -> Use actual name
+            entity_description = EntityDescription(key=alexa_list.id,
+                                                   name=alexa_list.name)
+
+        self._attr_unique_id = alexa_list.id
 
         super().__init__(
-            coordinator,
-            EntityDescription(key=alexa_list.id, name=alexa_list.name),
+        coordinator,
+            entity_description,
         )
 
         _LOGGER.debug(
@@ -96,6 +105,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
         Returns:
             List of TodoItems in the list.
         """
+
         todo_items: list[ListItem] = self._coordinator.todo_items.get(self._list.id, [])
 
         return [
@@ -152,7 +162,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
             raise ServiceValidationError(
                 translation_domain=DOMAIN,
                 translation_key="exceptions.todo_items_lookup_not_found",
-                translation_placeholders={"list_name": self._list.name},
+                translation_placeholders={"entitiy_id": self.entity_id},
             )
 
         for uid in uids:
@@ -164,7 +174,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
                     translation_key="exceptions.todo_item_not_found",
                     translation_placeholders={
                         "uid": uid,
-                        "list_name": self._list.name,
+                        "entitiy_id": self.entity_id,
                     },
                 )
             _LOGGER.debug(
@@ -205,7 +215,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
             raise ServiceValidationError(
                 translation_domain=DOMAIN,
                 translation_key="exceptions.todo_items_lookup_not_found",
-                translation_placeholders={"list_name": self._list.name},
+                translation_placeholders={"entitiy_id": self.entity_id},
             )
 
         existing_item = list_items_lookup.get(item.uid)
@@ -216,7 +226,7 @@ class AlexaToDoList(AmazonServiceEntity, TodoListEntity):
                 translation_key="exceptions.todo_item_not_found",
                 translation_placeholders={
                     "uid": item.uid,
-                    "list_name": self._list.name,
+                    "entitiy_id": self.entity_id,
                 },
             )
 

@@ -84,6 +84,14 @@
       "do_not_disturb": {
         "name": "Do not disturb"
       }
+    },
+    "todo": {
+      "shop": {
+        "name": "Shopping List"
+      },
+      "todo": {
+        "name": "To-do List"
+      }
     }
   },
   "exceptions": {
@@ -110,6 +118,18 @@
     },
     "invalid_sound_value": {
       "message": "Invalid sound {sound} specified"
+    },
+    "todo_item_not_found": {
+      "message": "Unable to delete to-do item {uid} from list {entitiy_id}: the item was not found. It may have already been deleted."
+    },
+    "todo_item_summary_empty": {
+      "message": "Item summary cannot be empty."
+    },
+    "todo_item_summary_uid_required": {
+      "message": "Item summary and UID are required."
+    },
+    "todo_items_lookup_not_found": {
+      "message": "Unable to delete to-do item(s) from list {entitiy_id}: the cached list items could not be found. Refresh and try again."
     }
   },
   "selector": {
@@ -222,32 +242,6 @@
         }
       },
       "name": "Send text command"
-    }
-  },
-  "issues": {
-    "revert_to_core": {
-      "title": "Revert to core version",
-      "description": "This is a test version.  You should remove this custom version and revert to the core Home Assistant Alexa Devices integration.",
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "This is a test version.  You should remove this custom version and revert to the core Home Assistant Alexa Devices integration.\n\nDo you want to revert to the core Home Assistant Alexa Devices integration now?",
-            "title": "Are you sure you want to revert to the core Alexa Devices integration?"
-          }
-        }
-      }
-    },
-    "restart_required": {
-      "title": "Restart required",
-      "description": "A restart of Home Assistant is required to revert Alexa Devices integration to core version.  Please restart Home Assistant as soon as possible.",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
-            "description": "Please restart Home Assistant to complete the reversion to the core Alexa Devices integration.",
-            "title": "Restart Home Assistant"
-          }
-        }
-      }
     }
   }
 }
